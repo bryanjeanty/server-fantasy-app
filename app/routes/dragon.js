@@ -4,18 +4,18 @@ const NEW = require("../controllers/dragon.js");
 const router = new Router();
 
 // Get Routes
-router.get("/", INDEX);
+// router.get("/", INDEX);
 router.get("/new", NEW);
-router.get("/:id", SHOW);
-router.get("/:id/edit", EDIT);
+// router.get("/:id", SHOW);
+// router.get("/:id/edit", EDIT);
 
-// Post Routes
-router.post("/", CREATE);
+// // Post Routes
+// router.post("/", CREATE);
 
-// Put Routes
-router.put("/:id", UPDATE);
+// // Put Routes
+// router.put("/:id", UPDATE);
 
-// Delete Routes
-router.delete("/:id", DESTROY);
+// // Delete Routes
+// router.delete("/:id", DESTROY);
 
 module.exports = router;
