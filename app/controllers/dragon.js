@@ -1,4 +1,4 @@
-const DragonTable = require("../dragon/table.js");
+const DragonTable = require("../models/dragon/table.js");
 
 const NEW = (req, res, next) => {
   const dragon = req.app.locals.engine.generation.newDragon();

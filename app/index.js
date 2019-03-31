@@ -1,5 +1,5 @@
 const express = require("express");
-const GenerationEngine = require("./generation/engine.js");
+const GenerationEngine = require("./models/generation/engine.js");
 const dragonRouter = require("./routes/dragon.js");
 const generationRouter = require("./routes/generation.js");
 
