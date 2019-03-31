@@ -1,4 +1,4 @@
-const TRAITS = require("../data/traits.json");
+const TRAITS = require("../../data/traits.json");
 
 // The default_properties object contains all
 // the global variables that don't change throughout
