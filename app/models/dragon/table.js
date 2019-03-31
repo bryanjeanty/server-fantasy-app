@@ -1,4 +1,4 @@
-const pool = require("../../databasePool.js");
+const pool = require("../../../databasePool.js");
 
 class DragonTable {
   static storeDragon(dragon) {

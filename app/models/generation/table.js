@@ -1,4 +1,4 @@
-const pool = require("../../databasePool.js");
+const pool = require("../../../databasePool.js");
 
 class GenerationTable {
   // By making the method below static, we can use

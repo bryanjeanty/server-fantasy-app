@@ -1,6 +1,6 @@
 const DragonTable = require("../dragon/table.js");
 
-const NEW = (req, res) => {
+const NEW = (req, res, next) => {
   const dragon = req.app.locals.engine.generation.newDragon();
 
   DragonTable.storeDragon(dragon)
@@ -11,7 +11,7 @@ const NEW = (req, res) => {
 
       res.json({ dragon });
     })
-    .catch(error => console.error(error));
+    .catch(error => next(error));
 };
 
 module.exports = NEW;
