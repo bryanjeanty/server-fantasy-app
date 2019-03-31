@@ -1,8 +1,16 @@
 const { Router } = require("express");
-const INDEX = require("../controllers/generation.js");
+const {
+  LIST,
+  NEW,
+  ITEM,
+  EDIT,
+  CREATE,
+  UPDATE,
+  DELETE
+} = require("../controllers/generation.js");
 
 const router = new Router();
 
-router.get("/", INDEX);
+router.get("/", LIST);
 
 module.exports = router;

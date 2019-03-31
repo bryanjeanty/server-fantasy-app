@@ -1,21 +1,23 @@
 const { Router } = require("express");
-const NEW = require("../controllers/dragon.js");
+const {
+  LIST,
+  NEW,
+  ITEM,
+  EDIT,
+  CREATE,
+  UPDATE,
+  DELETE
+} = require("../controllers/dragon.js");
 
 const router = new Router();
 
 // Get Routes
-// router.get("/", INDEX);
 router.get("/new", NEW);
-// router.get("/:id", SHOW);
-// router.get("/:id/edit", EDIT);
 
-// // Post Routes
-// router.post("/", CREATE);
+// Post Route
 
-// // Put Routes
-// router.put("/:id", UPDATE);
+// Put Route
 
-// // Delete Routes
-// router.delete("/:id", DESTROY);
+// Delete Route
 
 module.exports = router;
