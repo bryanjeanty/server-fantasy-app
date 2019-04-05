@@ -1,4 +1,5 @@
 const AccountTable = require("../models/account/table.js");
+const Session = require("../models/account/session.js");
 const { hash } = require("../models/account/helper.js");
 const { setSession } = require("./helper.js");
 
@@ -49,7 +50,23 @@ const SESSION = (req, res, next) => {
     .catch(error => next(error));
 };
 
+const LOGOUT = (req, res, next) => {
+  const { username } = Session.parse(req.cookies.sessionString);
+
+  AccountTable.updateSessionId({
+    sessionId: null,
+    usernameHash: hash(username)
+  })
+    .then(() => {
+      res.clearCookie("sessionString");
+
+      res.json({ message: "Successful logout!" });
+    })
+    .catch(error => next(error));
+};
+
 module.exports = {
   REGISTRATION,
-  SESSION
+  SESSION,
+  LOGOUT
 };
