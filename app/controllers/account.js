@@ -1,5 +1,6 @@
 const AccountTable = require("../models/account/table.js");
 const { hash } = require("../models/account/helper.js");
+const Session = require("../models/account/session.js");
 
 const CREATE = (req, res, next) => {
   const { username, password } = req.body;
@@ -18,7 +19,18 @@ const CREATE = (req, res, next) => {
         throw error;
       }
     })
-    .then(() => res.json({ message: "success!" }))
+    .then(() => {
+      const session = new Session({ username });
+      const sessionString = session.toString();
+
+      res.cookie("sessionString", sessionString, {
+        expire: Date.now() + 3600000,
+        httpOnly: true
+        // secure: true // Should be used with https (extremely important for production ready projects)
+      });
+
+      res.json({ message: "success!" });
+    })
     .catch(error => next(error));
 };
 
