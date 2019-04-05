@@ -2,25 +2,38 @@ const Session = require("../models/account/session");
 const AccountTable = require("../models/account/table.js");
 const { hash } = require("../models/account/helper.js");
 
-const setSession = ({ username, res }) => {
+const setSession = ({ username, res, sessionId }) => {
   return new Promise((resolve, reject) => {
-    const session = new Session({ username });
-    const sessionString = session.toString();
+    let session, sessionString;
 
-    AccountTable.updateSessionId({
-      sessionId: session.id,
-      usernameHash: hash(username)
-    })
-      .then(() => {
-        res.cookie("sessionString", sessionString, {
-          expire: Date.now() + 3600000,
-          httpOnly: true
-          // secure: true // Should be used with https (extremely important for production ready projects)
-        });
+    if (sessionId) {
+      sessionString = Session.sessionString({ username, id: sessionId });
+      setSessionCookie({ sessionString, res });
 
-        resolve({ message: "session was created" });
+      resolve({ message: "session restored" });
+    } else {
+      session = new Session({ username });
+      sessionString = session.toString();
+
+      AccountTable.updateSessionId({
+        sessionId: session.id,
+        usernameHash: hash(username)
       })
-      .catch(error => reject(error));
+        .then(() => {
+          setSessionCookie({ sessionString, res });
+
+          resolve({ message: "session was created" });
+        })
+        .catch(error => reject(error));
+    }
+  });
+};
+
+setSessionCookie = ({ sessionString, res }) => {
+  res.cookie("sessionString", sessionString, {
+    expire: Date.now() + 3600000,
+    httpOnly: true
+    // secure: true // Should be used with https (extremely important for production ready projects)
   });
 };
 

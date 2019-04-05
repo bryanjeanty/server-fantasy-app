@@ -2,7 +2,7 @@ const AccountTable = require("../models/account/table.js");
 const { hash } = require("../models/account/helper.js");
 const { setSession } = require("./helper.js");
 
-const CREATE = (req, res, next) => {
+const REGISTRATION = (req, res, next) => {
   const { username, password } = req.body;
   const usernameHash = hash(username);
   const passwordHash = hash(password);
@@ -28,6 +28,28 @@ const CREATE = (req, res, next) => {
     .catch(error => next(error));
 };
 
+const SESSION = (req, res, next) => {
+  const { username, password } = req.body;
+
+  AccountTable.getAccount({ usernameHash: hash(username) })
+    .then(({ account }) => {
+      if (account && account.passwordHash === hash(password)) {
+        const { sessionId } = account;
+
+        return setSession({ username, res, sessionId });
+      } else {
+        const error = new Error("Incorrect username/password");
+
+        error.statusCode = 409;
+
+        throw error;
+      }
+    })
+    .then(({ message }) => res.json({ message }))
+    .catch(error => next(error));
+};
+
 module.exports = {
-  CREATE
+  REGISTRATION,
+  SESSION
 };
