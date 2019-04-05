@@ -1,16 +1,32 @@
 const pool = require("../../../databasePool.js");
 
 class AccountTable {
-  static storeAccount({ username, password }) {
+  static storeAccount({ usernameHash, passwordHash }) {
     return new Promise((resolve, reject) => {
       pool.query(
-        `INSERT INTO account(username, password)
+        `INSERT INTO account("usernameHash", "passwordHash")
                 VALUES ($1, $2)`,
-        [username, password],
+        [usernameHash, passwordHash],
         (error, response) => {
-          if (error) reject("error", error);
+          if (error) reject(error);
 
           resolve();
+        }
+      );
+    });
+  }
+
+  static getAccount({ usernameHash }) {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `SELECT id, "passwordHash"
+        FROM account
+        WHERE "usernameHash" = $1`,
+        [usernameHash],
+        (error, response) => {
+          if (error) reject(error);
+
+          resolve({ account: response.rows[0] });
         }
       );
     });
