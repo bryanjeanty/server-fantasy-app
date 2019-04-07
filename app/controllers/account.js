@@ -1,5 +1,6 @@
 const AccountTable = require("../models/account/table.js");
 const Session = require("../models/account/session.js");
+const DragonAccountTable = require("../models/dragonAccount/table");
 const { hash } = require("../models/account/helper.js");
 const { setSession, authenticatedAccount } = require("./helper.js");
 
@@ -65,11 +66,20 @@ const LOGOUT = (req, res, next) => {
     .catch(error => next(error));
 };
 
-const AUTHENTICATE = (req, res, next) => {
-  const { sessionString } = req.cookies;
-
-  authenticatedAccount({ sessionString })
+const AUTHENTICATED = (req, res, next) => {
+  authenticatedAccount({ sessionString: req.cookies.sessionString })
     .then(({ authenticated }) => res.json({ authenticated }))
+    .catch(error => next(error));
+};
+
+const DRAGON_LIST = (req, res, next) => {
+  authenticatedAccount({ sessionString: req.cookies.sessionString })
+    .then(({ account }) => {
+      return DragonAccountTable.getAccountDragons({
+        accountId: account.id
+      });
+    })
+    .then(({ accountDragons }) => res.json({ accountDragons }))
     .catch(error => next(error));
 };
 
@@ -77,5 +87,6 @@ module.exports = {
   REGISTRATION,
   SESSION,
   LOGOUT,
-  AUTHENTICATE
+  AUTHENTICATED,
+  DRAGON_LIST
 };
