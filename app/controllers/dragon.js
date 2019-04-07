@@ -1,40 +1,27 @@
 const DragonTable = require("../models/dragon/table.js");
+const DragonAccountTable = require("../models/dragonAccount/table.js");
+const { authenticatedAccount } = require("./helper");
 
-// Get Functions
-const LIST = (req, res) => {};
 const NEW = (req, res, next) => {
-  const dragon = req.app.locals.engine.generation.newDragon();
+  let accountId, dragon;
 
-  DragonTable.storeDragon(dragon)
+  authenticatedAccount({
+    sessionString: req.cookies.sessionString
+  })
+    .then(({ account }) => {
+      accountId = account.id;
+
+      dragon = req.app.locals.engine.generation.newDragon();
+
+      return DragonTable.storeDragon(dragon);
+    })
     .then(({ dragonId }) => {
-      console.log("dragonId", dragonId);
-
       dragon.dragonId = dragonId;
 
-      res.json({ dragon });
+      return DragonAccountTable.storeDragonAccount({ accountId, dragonId });
     })
+    .then(() => res.json({ dragon }))
     .catch(error => next(error));
 };
-const ITEM = (req, res) => {};
-const EDIT = (req, res) => {};
 
-// Post Function
-const CREATE = (req, res) => {};
-
-// Put Function
-const UPDATE = (req, res) => {};
-
-// Delete Function
-const DELETE = (req, res) => {};
-
-// Helper Function(s)
-
-module.exports = {
-  LIST,
-  NEW,
-  ITEM,
-  EDIT,
-  CREATE,
-  UPDATE,
-  DELETE
-};
+module.exports = { NEW };

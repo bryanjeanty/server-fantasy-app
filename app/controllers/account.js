@@ -1,7 +1,7 @@
 const AccountTable = require("../models/account/table.js");
 const Session = require("../models/account/session.js");
 const { hash } = require("../models/account/helper.js");
-const { setSession } = require("./helper.js");
+const { setSession, authenticatedAccount } = require("./helper.js");
 
 const REGISTRATION = (req, res, next) => {
   const { username, password } = req.body;
@@ -68,23 +68,9 @@ const LOGOUT = (req, res, next) => {
 const AUTHENTICATE = (req, res, next) => {
   const { sessionString } = req.cookies;
 
-  if (!sessionString || !Session.verify(sessionString)) {
-    const error = new Error("Invalid session");
-
-    error.statusCode = 400;
-
-    return next(error);
-  } else {
-    const { username, id } = Session.parse(sessionString);
-
-    AccountTable.getAccount({ usernameHash: hash(username) })
-      .then(({ account }) => {
-        const authenticated = account.sessionId === id;
-
-        res.json({ authenticated });
-      })
-      .catch(error => next(error));
-  }
+  authenticatedAccount({ sessionString })
+    .then(({ authenticated }) => res.json({ authenticated }))
+    .catch(error => next(error));
 };
 
 module.exports = {
