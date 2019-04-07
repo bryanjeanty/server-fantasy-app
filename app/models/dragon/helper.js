@@ -32,4 +32,4 @@ const getDragonWithTraits = ({ dragonId }) => {
 //   .then(dragon => console.log("dragon", dragon))
 //   .catch(error => console.error("error", error));
 
-module.exports = getDragonWithTraits;
+module.exports = { getDragonWithTraits };

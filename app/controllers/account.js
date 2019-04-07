@@ -3,6 +3,7 @@ const Session = require("../models/account/session.js");
 const DragonAccountTable = require("../models/dragonAccount/table");
 const { hash } = require("../models/account/helper.js");
 const { setSession, authenticatedAccount } = require("./helper.js");
+const { getDragonWithTraits } = require("../models/dragon/helper");
 
 const REGISTRATION = (req, res, next) => {
   const { username, password } = req.body;
@@ -79,7 +80,16 @@ const DRAGON_LIST = (req, res, next) => {
         accountId: account.id
       });
     })
-    .then(({ accountDragons }) => res.json({ accountDragons }))
+    .then(({ accountDragons }) => {
+      return Promise.all(
+        accountDragons.map(accountDragon => {
+          return getDragonWithTraits({ dragonId: accountDragon.dragonId });
+        })
+      );
+    })
+    .then(dragons => {
+      res.json({ dragons });
+    })
     .catch(error => next(error));
 };
 
