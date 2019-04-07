@@ -24,4 +24,12 @@ const NEW = (req, res, next) => {
     .catch(error => next(error));
 };
 
-module.exports = { NEW };
+const UPDATE = (req, res, next) => {
+  const { nickname, dragonId } = req.body;
+
+  DragonTable.updateDragon({ nickname, dragonId })
+    .then(() => res.json({ message: "successfully updated dragon" }))
+    .catch(error => next(error));
+};
+
+module.exports = { NEW, UPDATE };
