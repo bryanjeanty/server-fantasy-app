@@ -27,9 +27,25 @@ const getDragonWithTraits = ({ dragonId }) => {
     .catch(error => console.error(error));
 };
 
-// Just for debugging
-// getDragonWithTraits({ dragonId: 1 })
-//   .then(dragon => console.log("dragon", dragon))
-//   .catch(error => console.error("error", error));
+const getPublicDragons = () => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      `SELECT id FROM dragon WHERE "isPublic" = TRUE`,
+      (error, response) => {
+        if (error) return reject(error);
 
-module.exports = { getDragonWithTraits };
+        const publicDragonRows = response.rows;
+
+        Promise.all(
+          publicDragonRows.map(({ id }) => {
+            return getDragonWithTraits({ dragonId: id });
+          })
+        )
+          .then(dragons => resolve({ dragons }))
+          .catch(error => reject(error));
+      }
+    );
+  });
+};
+
+module.exports = { getDragonWithTraits, getPublicDragons };
