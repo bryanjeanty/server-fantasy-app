@@ -4,7 +4,8 @@ const {
   SESSION,
   LOGOUT,
   AUTHENTICATED,
-  DRAGON_LIST
+  DRAGON_LIST,
+  INFO
 } = require("../controllers/account.js");
 
 const router = new Router();
@@ -14,5 +15,6 @@ router.post("/login", SESSION);
 router.get("/logout", LOGOUT);
 router.get("/authenticated", AUTHENTICATED);
 router.get("/dragons", DRAGON_LIST);
+router.get("/info", INFO);
 
 module.exports = router;
