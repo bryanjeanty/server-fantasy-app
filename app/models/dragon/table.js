@@ -3,13 +3,13 @@ const DragonTraitTable = require("../dragonTrait/table.js");
 
 class DragonTable {
   static storeDragon(dragon) {
-    const { birthdate, nickname, generationId } = dragon;
+    const { birthdate, nickname, generationId, isPublic, saleValue } = dragon;
 
     return new Promise((resolve, reject) => {
       pool.query(
-        `INSERT INTO dragon(birthdate, nickname, "generationId")
-                VALUES($1, $2, $3) RETURNING id`,
-        [birthdate, nickname, generationId],
+        `INSERT INTO dragon(birthdate, nickname, "generationId", "isPublic", "saleValue")
+                VALUES($1, $2, $3, $4, $5) RETURNING id`,
+        [birthdate, nickname, generationId, isPublic, saleValue],
         (error, response) => {
           if (error) return reject(error);
 
@@ -34,7 +34,7 @@ class DragonTable {
   static getDragon({ dragonId }) {
     return new Promise((resolve, reject) => {
       pool.query(
-        `SELECT birthdate, nickname, "generationId"
+        `SELECT birthdate, nickname, "generationId", "isPublic", "saleValue"
         FROM dragon
         WHERE dragon.id = $1`,
         [dragonId],
@@ -49,26 +49,35 @@ class DragonTable {
     });
   }
 
-  static updateDragon({ nickname, dragonId }) {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        `UPDATE dragon
-        SET nickname = $1
-        WHERE id = $2`,
-        [nickname, dragonId],
-        (error, response) => {
-          if (error) return reject(error);
+  static updateDragon({ nickname, dragonId, isPublic, saleValue }) {
+    const settingsMap = { nickname, isPublic, saleValue };
 
-          resolve();
+    const validQueries = Object.entries(settingsMap).filter(
+      ([settingsKey, settingsValue]) => {
+        if (settingsValue !== undefined) {
+          return new Promise((resolve, reject) => {
+            pool.query(
+              `UPDATE dragon
+            SET "${settingsKey}" = $1
+            WHERE id = $2`,
+              [settingsValue, dragonId],
+              (error, response) => {
+                if (error) return reject(error);
+
+                resolve();
+              }
+            );
+          });
         }
-      );
-    });
+      }
+    );
+
+    return Promise.all(validQueries);
   }
 }
 
-// Just for debugging
-// DragonTable.getDragon({ dragonId: 1 })
-//   .then(dragon => console.log(dragon))
-//   .catch(error => console.error("error", error));
+DragonTable.updateDragon({ dragonId: 1, nickname: "fooby" })
+  .then(() => console.log("successfully updated dragon"))
+  .catch(error => console.error("error", error));
 
 module.exports = DragonTable;
